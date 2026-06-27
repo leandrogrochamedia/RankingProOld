@@ -1,0 +1,20 @@
+RANKING PRO SHARK — RETOMAR AQUI
+================================
+Repo: /Users/leandrogrocha/Documents/DEV/ranking-pro-shark
+Log completo: logs/sessao_2026-06-27_18-55_Nucleo-Shark.md
+
+COMMITS: c2fdbfc (feat) | b436d58 (chore)
+
+FAZER AGORA:
+1. Criar Supabase NOVO (nao usar pyywdhjstvhmarvzijji)
+2. Rodar sql/001_nucleo.sql no SQL Editor
+3. cp config.example.js config.js && preencher URL + anon key
+4. python3 -m http.server 8765
+5. Testar: localhost:8765/dev/gerar-qr.html
+6. Deploy Netlify com env SUPABASE_URL + SUPABASE_ANON_KEY
+7. Teste celular 4G
+
+SLUG TESTE: joao-barbeiro-teste
+
+SERVIDOR: pode estar na porta 8765 — matar com:
+  lsof -ti:8765 | xargs kill

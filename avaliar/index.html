@@ -6,16 +6,14 @@
   <meta name="theme-color" content="#08080f">
   <title>Ranking Pro — Avaliar</title>
   <link rel="stylesheet" href="../css/ranking-pro.css">
+  <script src="../js/site-paths.js"></script>
 </head>
 <body class="rp-shell">
   <div class="rp-container">
-    <header class="rp-topbar">
-      <div class="rp-mark" aria-hidden="true">🏆</div>
-      <span class="rp-brand">Ranking Pro</span>
-    </header>
+    <div id="rp-page-shell"></div>
     <div class="rp-card" id="app">
       <div class="rp-eyebrow-wrap">
-        <p class="rp-eyebrow">Avaliação verificada via QR</p>
+        <p class="rp-eyebrow">Avaliação verificada</p>
       </div>
 
       <div id="state-loading" class="rp-loading">Carregando…</div>
@@ -64,6 +62,8 @@
 
   <script src="../config.js"></script>
   <script src="../js/api.js"></script>
+  <script src="../js/site-nav.js"></script>
+  <script src="../js/page-shell.js"></script>
   <script src="../js/qr-service.js"></script>
   <script src="../js/reviews-service.js"></script>
   <script>

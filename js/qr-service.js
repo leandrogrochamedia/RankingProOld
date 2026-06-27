@@ -140,18 +140,31 @@
     return params.get('professionalId') || params.get('professional_id') || null;
   }
 
+  function pathRoot() {
+    return global.RankingProPaths
+      ? global.RankingProPaths.siteUrl('')
+      : './';
+  }
+
   function buildQrUrl(token) {
-    const base = global.location.origin + '/qr/';
+    const base = (global.RankingProPaths
+      ? global.RankingProPaths.siteUrl('qr/')
+      : pathRoot() + 'qr/');
     return base + '?token=' + encodeURIComponent(token);
   }
 
   function buildAvaliarUrl(token) {
-    const base = global.location.origin + '/avaliar/';
+    const base = (global.RankingProPaths
+      ? global.RankingProPaths.siteUrl('avaliar/')
+      : pathRoot() + 'avaliar/');
     return base + '?token=' + encodeURIComponent(token);
   }
 
   function buildProfileUrl(professionalId) {
-    return global.location.origin + '/p/?id=' + encodeURIComponent(professionalId);
+    if (global.RankingProPaths) {
+      return global.RankingProPaths.siteUrl('p/?id=' + encodeURIComponent(professionalId));
+    }
+    return pathRoot() + 'p/?id=' + encodeURIComponent(professionalId);
   }
 
   function getProfessionalIdFromRpc(data) {

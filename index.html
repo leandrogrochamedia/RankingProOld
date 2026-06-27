@@ -7,50 +7,53 @@
   <meta name="color-scheme" content="dark">
   <title>Ranking Pro — Reputação verificada</title>
   <link rel="stylesheet" href="css/ranking-pro.css">
+  <script src="js/site-paths.js"></script>
   <script>
     (function () {
       var params = new URLSearchParams(window.location.search);
       var token = params.get('token') || params.get('qr_token');
       if (token) {
-        window.location.replace('/qr/?token=' + encodeURIComponent(token));
+        var dest = RankingProPaths.siteUrl('qr/?token=' + encodeURIComponent(token));
+        window.location.replace(dest);
       }
     })();
   </script>
 </head>
 <body class="rp-shell">
   <div class="rp-container">
-    <header class="rp-topbar">
+    <header class="rp-header">
       <div class="rp-mark" aria-hidden="true">🏆</div>
       <span class="rp-brand">Ranking Pro</span>
     </header>
+    <div id="rp-site-nav"></div>
 
     <div class="rp-card rp-card-hero">
       <div class="rp-eyebrow-wrap">
-        <p class="rp-eyebrow">✓ Avaliação só após atendimento real</p>
+        <p class="rp-eyebrow">✓ Só após atendimento real</p>
       </div>
-      <h1 class="rp-title">Reputação que o profissional leva consigo</h1>
-      <p class="rp-subtitle">Cliente escaneia o QR, avalia em segundos e a nota verificada aparece no perfil público.</p>
+      <h1 class="rp-title">Reputação verificada</h1>
+      <p class="rp-subtitle">QR → avaliação → perfil público. Sem login.</p>
 
       <div class="rp-steps">
         <div class="rp-step">
           <span class="rp-step-num">1</span>
           <div class="rp-step-text">
-            <strong>QR único por atendimento</strong>
-            <span>Válido por 2 horas — impossível avaliar sem ter sido atendido.</span>
+            <strong>QR por atendimento</strong>
+            <span>Válido 2h · token único</span>
           </div>
         </div>
         <div class="rp-step">
           <span class="rp-step-num">2</span>
           <div class="rp-step-text">
             <strong>Nota + comentário</strong>
-            <span>Sem cadastro, sem login. Só estrelas e opinião honesta.</span>
+            <span>Cliente avalia na hora</span>
           </div>
         </div>
         <div class="rp-step">
           <span class="rp-step-num">3</span>
           <div class="rp-step-text">
-            <strong>Perfil público atualizado</strong>
-            <span>Média e histórico verificados para bio, WhatsApp e Instagram.</span>
+            <strong>Perfil atualizado</strong>
+            <span>Média e histórico verificados</span>
           </div>
         </div>
       </div>
@@ -59,32 +62,32 @@
         <a class="rp-btn" href="dev/gerar-qr.html">Gerar QR de teste</a>
         <a class="rp-btn rp-btn-secondary" id="demo-profile" href="#">Ver perfil de exemplo</a>
       </div>
-
-      <p class="rp-footnote">
-        Dev local · banco Proofly · perfil em <code>/p/?id=UUID</code>
-      </p>
     </div>
   </div>
 
   <script src="config.js"></script>
   <script src="js/api.js"></script>
+  <script src="js/site-nav.js"></script>
   <script>
     (async function () {
       var link = document.getElementById('demo-profile');
+      var navProfile = document.getElementById('nav-profile');
       try {
         var rows = await RankingProAPI.select(
           'professionals',
-          '?select=id,name,avg_rating,total_reviews&order=total_reviews.desc&limit=1'
+          '?select=id,name&order=total_reviews.desc&limit=1'
         );
         if (rows && rows[0]) {
-          link.href = '/p/?id=' + encodeURIComponent(rows[0].id);
-          link.textContent = 'Ver perfil: ' + rows[0].name;
+          var href = RankingProPaths.siteUrl('p/?id=' + encodeURIComponent(rows[0].id));
+          link.href = href;
+          link.textContent = 'Perfil: ' + rows[0].name;
+          if (navProfile) navProfile.href = href;
         } else {
-          link.href = 'dev/gerar-qr.html';
+          link.href = RankingProPaths.siteUrl('dev/gerar-qr.html');
           link.textContent = 'Gerar primeiro QR';
         }
       } catch (e) {
-        link.href = 'dev/gerar-qr.html';
+        link.href = RankingProPaths.siteUrl('dev/gerar-qr.html');
         link.textContent = 'Configurar e testar';
       }
     })();
