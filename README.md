@@ -78,6 +78,19 @@ Abra `http://localhost:8765`
 
 Agregação de nota: trigger existente `recalc_prof_talent_metrics` → `avg_rating`.
 
-## Fora do escopo (Semana 3+)
+## Fase 2 — Entrada + Auth + Seletor
 
-`session.js`, login, cadastro, busca, dashboard, slug/Página de Reputação, Asaas.
+| Tela | Rota |
+|------|------|
+| Landing | `index.html` — Entrar · Escanear QR · Buscar |
+| Login | `login.html` — Google fake (Leandro Rocha) |
+| Seletor multi-perfil | `selecionar-perfil.html` |
+| Stubs | `cliente.html`, `dashboard-profissional.html`, `dashboard-estabelecimento.html` |
+
+Sessão: `sessionStorage.proofly_session` via `js/session.js`.
+
+Scripts core: `js/loader.js` → `session.js`, `profile-selector.js`, `flow-registry.js`, `user-service.js`.
+
+## Fora do escopo (Fase 3+)
+
+`cliente.js` completo (busca + drawer), `menu.js` dock, onboarding completo, slug/Página de Reputação, Asaas.

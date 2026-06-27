@@ -11,17 +11,21 @@
   <link rel="stylesheet" href="css/proofly-glass.css">
   <link rel="stylesheet" href="css/nucleus.css">
   <script src="js/site-paths.js"></script>
-  <script>
-    (function () {
-      var params = new URLSearchParams(window.location.search);
-      var token = params.get('token') || params.get('qr_token');
-      if (token) {
-        window.location.replace(RankingProPaths.siteUrl('qr/?token=' + encodeURIComponent(token)));
-      }
-    })();
-  </script>
 </head>
 <body class="home-splash nucleus-page">
+
+  <div class="qr-modal" id="qrScannerContainer">
+    <div class="qr-modal-backdrop" onclick="fecharScannerQR()"></div>
+    <div class="qr-modal-content">
+      <div class="qr-modal-header">
+        <h3>📷 Escanear QR Code</h3>
+        <button type="button" class="qr-modal-close" onclick="fecharScannerQR()">✕</button>
+      </div>
+      <div class="scanner-box"><div id="qr-reader"></div></div>
+      <p id="qrScannerStatus" class="qr-status">Iniciando câmera...</p>
+    </div>
+  </div>
+
   <main class="home-splash-main">
     <div class="home-splash-card">
       <div class="home-splash-logo" aria-hidden="true">🏆</div>
@@ -30,59 +34,31 @@
       <div class="home-splash-badge-wrap">
         <p class="home-splash-badge">✓ Só após atendimento real</p>
       </div>
-      <h1>Reputação verificada</h1>
-      <p class="home-splash-lead">QR → avaliação → perfil público. Sem login.</p>
-
-      <div class="home-splash-steps">
-        <div class="home-splash-step">
-          <span class="home-splash-step-num">1</span>
-          <div><strong>QR por atendimento</strong><span>Válido 2h · token único</span></div>
-        </div>
-        <div class="home-splash-step">
-          <span class="home-splash-step-num">2</span>
-          <div><strong>Nota + comentário</strong><span>Cliente avalia na hora</span></div>
-        </div>
-        <div class="home-splash-step">
-          <span class="home-splash-step-num">3</span>
-          <div><strong>Perfil atualizado</strong><span>Média e histórico verificados</span></div>
-        </div>
-      </div>
+      <h1>Ranking Pro</h1>
+      <p class="home-splash-lead">Reputação verificada por QR — avaliações reais após atendimento.</p>
 
       <div class="home-splash-actions">
-        <a class="home-splash-btn home-splash-btn--primary" href="dev/gerar-qr.html">Gerar QR de teste</a>
-        <a class="home-splash-btn home-splash-btn--secondary" id="demo-profile" href="#">Ver perfil de exemplo</a>
+        <a class="home-splash-btn home-splash-btn--primary" href="login.html">
+          <span aria-hidden="true">🔐</span>
+          <span>Entrar</span>
+        </a>
+        <button type="button" class="home-splash-btn home-splash-btn--secondary" id="btnScanQr">
+          <span aria-hidden="true">📷</span>
+          <span>Escanear QR para avaliar</span>
+        </button>
+      </div>
+
+      <p class="home-splash-divider">ou continue sem conta</p>
+      <div class="home-splash-links">
+        <a class="home-splash-link" href="cliente.html">Buscar profissionais e lugares →</a>
       </div>
     </div>
   </main>
 
-  <footer class="home-splash-footer">© 2026 Ranking Pro — Proofly Glass</footer>
+  <footer class="home-splash-footer">© 2026 Ranking Pro — Reputação verificada</footer>
 
-  <script src="config.js"></script>
-  <script src="js/api.js"></script>
+  <script src="js/index-qr.js"></script>
+  <script src="js/loader.js"></script>
   <script src="js/site-nav.js"></script>
-  <script>
-    (async function () {
-      var link = document.getElementById('demo-profile');
-      var navProfile = document.getElementById('nav-profile');
-      try {
-        var rows = await RankingProAPI.select(
-          'professionals',
-          '?select=id,name&order=total_reviews.desc&limit=1'
-        );
-        if (rows && rows[0]) {
-          var href = RankingProPaths.siteUrl('p/?id=' + encodeURIComponent(rows[0].id));
-          link.href = href;
-          link.textContent = 'Perfil: ' + rows[0].name;
-          if (navProfile) navProfile.href = href;
-        } else {
-          link.href = RankingProPaths.siteUrl('dev/gerar-qr.html');
-          link.textContent = 'Gerar primeiro QR';
-        }
-      } catch (e) {
-        link.href = RankingProPaths.siteUrl('dev/gerar-qr.html');
-        link.textContent = 'Configurar e testar';
-      }
-    })();
-  </script>
 </body>
 </html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="theme-color" content="#08080f">
+  <meta name="color-scheme" content="dark">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Ranking Pro — Cliente</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/proofly-glass.css">
+  <link rel="stylesheet" href="css/nucleus.css">
+</head>
+<body class="cliente-page nucleus-page">
+  <div class="nucleus-shell nucleus-shell--wide">
+    <div class="glass-discovery-shell nucleus-glass">
+      <p class="nucleus-eyebrow">Hub cliente</p>
+      <h1 class="nucleus-title">Encontre profissionais de confiança</h1>
+      <p class="nucleus-subtitle">Fase 3 — busca por especialidade/cidade + QR scanner + drawer de perfil.</p>
+      <p class="nucleus-meta" id="session-info"></p>
+      <div class="home-splash-actions" style="margin-top:16px;">
+        <a href="index.html" class="home-splash-btn home-splash-btn--secondary">← Voltar ao início</a>
+        <a href="login.html" class="home-splash-btn home-splash-btn--primary" id="btn-entrar">Entrar</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/loader.js"></script>
+  <script>
+    document.addEventListener('scriptsLoaded', function () {
+      const session = getSession();
+      const info = document.getElementById('session-info');
+      const btnEntrar = document.getElementById('btn-entrar');
+      if (session?.userId) {
+        info.textContent = 'Logado como ' + (session.name || session.email);
+        btnEntrar.href = 'selecionar-perfil.html?forceProfileSelect=true';
+        btnEntrar.textContent = 'Trocar área';
+      }
+    });
+  </script>
+</body>
+</html>

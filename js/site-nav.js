@@ -5,12 +5,17 @@
 
   const P = () => global.RankingProPaths;
 
+  function hasSession() {
+    return typeof global.getSession === 'function' && !!global.getSession()?.userId;
+  }
+
   function currentKey() {
     const path = global.location.pathname.toLowerCase();
     if (path.includes('/dev/')) return 'dev';
     if (path.includes('/p/')) return 'profile';
     if (path.includes('/avaliar/')) return 'avaliar';
     if (path.includes('/qr/')) return 'qr';
+    if (path.includes('login')) return 'login';
     return 'home';
   }
 
@@ -18,10 +23,18 @@
     if (!host || !P()) return;
     const key = currentKey();
     const items = [
-      { key: 'home', label: 'Início', href: P().siteUrl('index.html') },
-      { key: 'dev', label: 'Gerar QR', href: P().siteUrl('dev/gerar-qr.html') },
-      { key: 'profile', label: 'Perfil', href: P().siteUrl('p/'), id: 'nav-profile' }
+      { key: 'home', label: 'Início', href: P().siteUrl('index.html') }
     ];
+
+    if (!hasSession()) {
+      items.push({ key: 'login', label: 'Entrar', href: P().siteUrl('login.html') });
+    }
+
+    items.push({ key: 'dev', label: 'Gerar QR', href: P().siteUrl('dev/gerar-qr.html') });
+
+    if (hasSession()) {
+      items.push({ key: 'profile', label: 'Perfil', href: P().siteUrl('p/'), id: 'nav-profile' });
+    }
 
     host.innerHTML =
       '<nav class="nucleus-nav" aria-label="Navegação">' +
@@ -46,11 +59,17 @@
     }
   }
 
+  function remount() {
+    mount();
+  }
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', mount);
   } else {
     mount();
   }
 
-  global.RankingProNav = { renderNav, mount };
+  document.addEventListener('scriptsLoaded', remount);
+
+  global.RankingProNav = { renderNav, mount, remount };
 })(window);

@@ -171,6 +171,30 @@ body.home-splash {
   color: var(--text-glass-muted);
 }
 
+.home-splash-divider {
+  margin: 20px 0 12px;
+  font-size: 12px;
+  color: var(--text-glass-muted);
+  text-align: center;
+}
+
+.home-splash-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.home-splash-link {
+  font-size: 14px;
+  color: var(--text-glass-secondary, #94a3b8);
+  text-decoration: none;
+}
+
+.home-splash-link:hover {
+  color: #c4b5fd;
+}
+
 /* Nav pills */
 .nucleus-nav {
   margin-bottom: 12px;
