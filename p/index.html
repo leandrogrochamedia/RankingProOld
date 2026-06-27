@@ -48,7 +48,7 @@
       const reviewsEmpty = document.getElementById('reviews-empty');
 
       const params = new URLSearchParams(window.location.search);
-      const slug = params.get('slug');
+      const profId = params.get('id');
 
       function hideAll() {
         loading.classList.add('rp-hidden');
@@ -56,14 +56,14 @@
         profileBlock.classList.add('rp-hidden');
       }
 
-      if (!slug) {
+      if (!profId) {
         hideAll();
         errorBlock.classList.remove('rp-hidden');
         return;
       }
 
       try {
-        const prof = await RankingProProfile.getProfessionalBySlug(slug);
+        const prof = await RankingProProfile.getProfessionalById(profId);
 
         if (!prof) {
           hideAll();
@@ -72,6 +72,7 @@
         }
 
         const reviews = await RankingProProfile.getReviewsForProfessional(prof.id);
+        const verifiedReviews = (reviews || []).filter(RankingProProfile.isReviewVerified);
 
         hideAll();
         profileBlock.classList.remove('rp-hidden');
@@ -80,29 +81,28 @@
         profSpecialty.textContent = prof.specialty || '';
         profSpecialty.style.display = prof.specialty ? 'block' : 'none';
 
-        const avg = Number(prof.average_rating) || 0;
+        const avg = Number(prof.avg_rating) || 0;
         ratingBig.textContent = avg.toFixed(1);
         ratingMeta.textContent = RankingProProfile.formatRatingDisplay(avg, prof.total_reviews);
 
-        if (!reviews || reviews.length === 0) {
+        if (!verifiedReviews.length) {
           reviewsEmpty.classList.remove('rp-hidden');
           return;
         }
 
         reviewsEmpty.classList.add('rp-hidden');
-        reviewsList.innerHTML = reviews.map(function (r) {
+        reviewsList.innerHTML = verifiedReviews.map(function (r) {
           const stars = RankingProProfile.renderStars(r.rating);
           const comment = r.comment
             ? '<p class="rp-review-comment">' + escapeHtml(r.comment) + '</p>'
             : '';
           const date = RankingProProfile.formatRelativeDate(r.created_at);
-          const badge = r.is_verified
-            ? '<span class="rp-verified-badge">Verificada</span>'
-            : '';
 
           return (
             '<li class="rp-review-item">' +
-              '<div class="rp-review-stars">' + stars + badge + '</div>' +
+              '<div class="rp-review-stars">' + stars +
+                '<span class="rp-verified-badge">Verificada</span>' +
+              '</div>' +
               comment +
               '<p class="rp-review-date">' + escapeHtml(date) + '</p>' +
             '</li>'

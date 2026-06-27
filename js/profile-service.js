@@ -1,15 +1,15 @@
-// Ranking Pro — public profile data
+// Ranking Pro — public profile data (Proofly: id + avg_rating)
 
 (function (global) {
   'use strict';
 
   const API = () => global.RankingProAPI;
 
-  async function getProfessionalBySlug(slug) {
+  async function getProfessionalById(id) {
     const rows = await API().select(
       'professionals',
-      '?slug=eq.' + encodeURIComponent(slug) +
-        '&select=id,slug,name,specialty,avatar_url,average_rating,total_reviews&limit=1'
+      '?id=eq.' + encodeURIComponent(id) +
+        '&select=id,name,specialty,avatar_url,avg_rating,total_reviews&limit=1'
     );
     return rows?.[0] || null;
   }
@@ -18,8 +18,13 @@
     return API().select(
       'reviews',
       '?professional_id=eq.' + encodeURIComponent(professionalId) +
-        '&select=rating,comment,is_verified,created_at&order=created_at.desc'
+        '&review_type=eq.client_to_professional' +
+        '&select=rating,comment,verified,is_verified,created_at&order=created_at.desc'
     );
+  }
+
+  function isReviewVerified(review) {
+    return !!(review?.is_verified ?? review?.verified);
   }
 
   function formatRelativeDate(iso) {
@@ -53,8 +58,9 @@
   }
 
   global.RankingProProfile = {
-    getProfessionalBySlug,
+    getProfessionalById,
     getReviewsForProfessional,
+    isReviewVerified,
     formatRelativeDate,
     renderStars,
     formatRatingDisplay

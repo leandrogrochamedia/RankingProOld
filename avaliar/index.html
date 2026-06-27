@@ -100,13 +100,17 @@
         formBlock.classList.remove('rp-hidden');
         profName.textContent = data.professional_name || '';
         profSpecialty.textContent = data.professional_specialty || '';
-        profileLink.href = RankingProQR.buildProfileUrl(data.professional_slug);
+        profileLink.href = RankingProQR.buildProfileUrl(
+          RankingProQR.getProfessionalIdFromRpc(data)
+        );
       }
 
-      function showSuccess(slug) {
+      function showSuccess(data) {
         hideAll();
         successBlock.classList.remove('rp-hidden');
-        profileLink.href = RankingProQR.buildProfileUrl(slug);
+        profileLink.href = RankingProQR.buildProfileUrl(
+          RankingProQR.getProfessionalIdFromRpc(data)
+        );
       }
 
       function updateStars() {
@@ -172,7 +176,7 @@
           );
 
           if (result.status === 'success') {
-            showSuccess(result.professional_slug);
+            showSuccess(result);
             return;
           }
 

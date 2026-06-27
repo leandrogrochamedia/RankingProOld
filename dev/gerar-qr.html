@@ -91,7 +91,7 @@
       try {
         professionals = await RankingProAPI.select(
           'professionals',
-          '?select=id,name,slug&order=name.asc'
+          '?select=id,name,specialty&order=name.asc&limit=50'
         );
 
         if (!professionals.length) {
@@ -100,7 +100,8 @@
         }
 
         profSelect.innerHTML = professionals.map(function (p) {
-          return '<option value="' + p.id + '">' + escapeHtml(p.name) + ' (@' + escapeHtml(p.slug) + ')</option>';
+          const spec = p.specialty ? ' — ' + p.specialty : '';
+          return '<option value="' + p.id + '">' + escapeHtml(p.name) + escapeHtml(spec) + '</option>';
         }).join('');
 
         showForm();
@@ -125,7 +126,7 @@
             return;
           }
 
-          const url = RankingProQR.buildQrUrl(result.token);
+          const url = result.url || RankingProQR.buildQrUrl(result.token);
           showResult(result, url);
         } catch (err) {
           console.error(err);

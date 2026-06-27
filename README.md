@@ -1,33 +1,35 @@
-# Ranking Pro — Shark Mode Núcleo
+# Ranking Pro — Núcleo (Ponte Proofly)
 
-Infraestrutura de reputação verificada via QR Code. Escopo Semana 1–2: **QR → avaliação → perfil público**.
+Infraestrutura de reputação verificada via QR Code. Escopo: **QR → avaliação anônima → perfil público**.
 
 ## Stack
 
 - HTML estático + JavaScript vanilla
-- Supabase (REST + RPC)
-- Deploy: Netlify
+- Supabase Proofly (`pyywdhjstvhmarvzijji`) — REST + RPC
+- Dev local: `python3 -m http.server 8765` (sem Netlify nesta fase)
 
 ## Estrutura
 
 ```
 ranking-pro-shark/
-├── qr/           → /qr/?token=XXX (valida e redireciona)
-├── avaliar/      → formulário de nota + comentário
-├── p/            → perfil público /p/?slug=...
-├── dev/          → gerador de QR (MVP interno)
+├── qr/           → /qr/?token=XXX (canônico; legado index.html?token= redireciona)
+├── avaliar/      → formulário nota + comentário (sem login)
+├── p/            → perfil público /p/?id=UUID
+├── dev/          → gerador de QR (dev)
 ├── js/           → api, qr, reviews, profile services
-├── sql/          → schema do núcleo
-└── config.js     → credenciais (não versionado)
+├── sql/
+│   ├── 001_nucleo.sql      → referência (NÃO rodar no Proofly)
+│   └── 002_proofly_bridge.sql → RPCs + used_at (rodar no Proofly)
+└── config.js     → credenciais MVP (gitignored)
 ```
 
 ## Setup local
 
-### 1. Supabase (projeto NOVO)
+### 1. SQL no Supabase Proofly
 
-1. Crie um projeto em [supabase.com](https://supabase.com) — **não** reutilize `pyywdhjstvhmarvzijji`
-2. No SQL Editor, execute o conteúdo de `sql/001_nucleo.sql`
-3. Confirme o seed: profissional `joao-barbeiro-teste`
+No SQL Editor do projeto `pyywdhjstvhmarvzijji`, execute **`sql/002_proofly_bridge.sql`**.
+
+Não rode `001_nucleo.sql` no banco Proofly.
 
 ### 2. Config
 
@@ -35,9 +37,9 @@ ranking-pro-shark/
 cp config.example.js config.js
 ```
 
-Preencha com **Project URL** e **anon key** (Settings → API).
+Use a mesma **Project URL** e **anon key** do MVP (`MVP Hanking PRO/config.js`).
 
-### 3. Servidor local
+### 3. Servidor
 
 ```bash
 cd ranking-pro-shark
@@ -46,71 +48,36 @@ python3 -m http.server 8765
 
 Abra `http://localhost:8765`
 
-## Fluxo de teste manual
+## Fluxo de teste
 
-1. Abra `http://localhost:8765/dev/gerar-qr.html`
-2. Selecione o profissional de teste → **Gerar QR Code**
-3. Copie a URL ou escaneie o QR no celular (mesma rede ou produção)
-4. Avalie com nota + comentário
-5. Abra `/p/?slug=joao-barbeiro-teste` — avaliação visível
-6. Reabra o mesmo QR → bloqueado ("já registrada")
-7. No Supabase, force `expires_at` no passado → bloqueado ("expirou")
+1. `http://localhost:8765/dev/gerar-qr.html` — lista profissionais reais do Proofly
+2. Gerar QR → URL canônica `/qr/?token=...`
+3. Abrir URL → redireciona `/avaliar/` → nota + comentário (**sem login**)
+4. `/p/?id=UUID` — avaliação verificada + `avg_rating` atualizado
+5. Reabrir mesmo QR → bloqueado (`used_at` + RPC)
+6. Forçar `expires_at` no passado em `qr_codes` → bloqueado
 
-## Deploy (Netlify)
+## Decisões Shark (ponte)
 
-### Opção A — CLI
+| Tema | Valor |
+|------|-------|
+| Banco | Supabase Proofly (mesmo do MVP) |
+| Avaliação QR | Anônima via RPC (`user_id` NULL) |
+| Perfil | `/p/?id=UUID` |
+| QR canônico | `/qr/?token=`; legado `?token=` na home redireciona |
+| Single-use | RPC + coluna `used_at` em `qr_codes` |
+| Expiração novos QRs | 2 horas |
 
-```bash
-npm i -g netlify-cli   # ou npx netlify
-netlify login
-netlify init
-netlify deploy --prod
-```
-
-### Opção B — Git + UI
-
-1. Push para GitHub/GitLab
-2. Netlify → New site from Git → pasta raiz
-3. Build command: *(vazio)* | Publish directory: `.`
-
-### Variáveis no Netlify
-
-Em **Site settings → Environment variables**, defina:
-
-| Variável | Valor |
-|----------|-------|
-| `SUPABASE_URL` | `https://SEU-PROJETO.supabase.co` |
-| `SUPABASE_ANON_KEY` | anon key do projeto |
-
-O build (`scripts/build-config.sh`) gera `config.js` automaticamente — **nunca** commite secrets no git.
-
-## Variáveis
-
-| Variável | Onde | Descrição |
-|----------|------|-----------|
-| `SUPABASE_URL` | config.js | URL do projeto Supabase |
-| `SUPABASE_ANON_KEY` | config.js | Chave anon (pública, RLS protege) |
-
-## RPCs (backend)
+## RPCs
 
 | Função | Uso |
-|--------|-----|
-| `validate_qr_token(token)` | Valida QR antes de avaliar |
-| `submit_qr_review(token, rating, comment)` | Único ponto de INSERT em reviews |
-| `create_qr_session(professional_id, hours)` | Gera sessão QR (dev/MVP) |
+|--------|------|
+| `validate_qr_token(token)` | Valida antes de avaliar |
+| `submit_qr_review(token, rating, comment)` | INSERT anônimo em `reviews` |
+| `create_qr_session(professional_id, hours, app_base_url)` | Gera `qr_codes` (dev) |
 
-## Segurança
-
-- INSERT direto em `reviews` bloqueado por RLS
-- Token single-use (`used_at`)
-- Token com expiração (`expires_at`)
-- `is_verified = true` implícito via QR
+Agregação de nota: trigger existente `recalc_prof_talent_metrics` → `avg_rating`.
 
 ## Fora do escopo (Semana 3+)
 
-Cadastro, estabelecimentos, busca, dashboard, Asaas, auth completa.
-
-## Profissional de teste
-
-- **Slug:** `joao-barbeiro-teste`
-- **Nome:** João Barbeiro (Teste)
+`session.js`, login, cadastro, busca, dashboard, slug/Página de Reputação, Asaas.

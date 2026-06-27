@@ -4,11 +4,13 @@
   'use strict';
 
   function getConfig() {
-    const cfg = global.RANKING_PRO_CONFIG;
-    if (!cfg?.SUPABASE_URL || !cfg?.SUPABASE_ANON_KEY) {
+    const cfg = global.RANKING_PRO_CONFIG || {};
+    const url = cfg.SUPABASE_URL || global.SUPABASE_URL;
+    const key = cfg.SUPABASE_ANON_KEY || cfg.SUPABASE_KEY || global.SUPABASE_KEY;
+    if (!url || !key) {
       throw new Error('Configure config.js com SUPABASE_URL e SUPABASE_ANON_KEY.');
     }
-    return cfg;
+    return { SUPABASE_URL: url, SUPABASE_ANON_KEY: key };
   }
 
   function baseHeaders() {

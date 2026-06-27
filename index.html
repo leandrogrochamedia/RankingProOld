@@ -5,15 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ranking Pro</title>
   <link rel="stylesheet" href="css/ranking-pro.css">
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var token = params.get('token') || params.get('qr_token');
+      if (token) {
+        window.location.replace('/qr/?token=' + encodeURIComponent(token));
+      }
+    })();
+  </script>
 </head>
 <body>
   <div class="rp-container">
     <div class="rp-card">
       <p class="rp-logo">Ranking Pro</p>
       <h1 class="rp-title">Reputação verificada</h1>
-      <p class="rp-subtitle">Núcleo Shark — desenvolvimento local</p>
+      <p class="rp-subtitle">Núcleo — banco Proofly, desenvolvimento local</p>
       <a class="rp-btn rp-link" href="dev/gerar-qr.html" style="text-align:center;text-decoration:none;display:block;">Gerar QR (dev)</a>
-      <a class="rp-btn rp-btn-secondary rp-link" href="p/?slug=joao-barbeiro-teste" style="text-align:center;text-decoration:none;display:block;">Ver perfil de teste</a>
+      <p class="rp-message" style="margin-top:16px;font-size:13px;text-align:center;">
+        Perfil público: <code>/p/?id=UUID</code> do profissional
+      </p>
     </div>
   </div>
 </body>
