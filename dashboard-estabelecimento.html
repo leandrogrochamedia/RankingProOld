@@ -6,8 +6,8 @@
   <meta name="color-scheme" content="dark">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Ranking Pro — Dashboard Estabelecimento</title>
-  <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="./base.css">
+  <link rel="stylesheet" href="./style.css">
 </head>
 <body>
   <div class="container" style="max-width:520px;margin:48px auto;padding:0 20px;">
@@ -16,19 +16,18 @@
       <p style="color:#64748b;margin:0 0 20px;">Fase 4 — equipe, nota média e últimas avaliações.</p>
       <p id="session-info" style="font-size:14px;color:#475569;"></p>
       <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px;">
-        <a href="selecionar-perfil.html?forceProfileSelect=true" class="btn btn-outline" style="text-align:center;text-decoration:none;">Trocar de área</a>
+        <a href="./selecionar-perfil.html?forceProfileSelect=true" class="btn btn-outline" style="text-align:center;text-decoration:none;">Trocar de área</a>
         <button type="button" class="btn btn-outline" onclick="resetSessionAndGoHome()">Sair</button>
-        <a href="index.html" style="text-align:center;font-size:14px;color:#6366f1;">← Início</a>
+        <a href="./index.html" style="text-align:center;font-size:14px;color:#6366f1;">← Início</a>
       </div>
     </div>
   </div>
-
-  <script src="js/loader.js"></script>
+  <script src="./loader.js"></script>
   <script>
     document.addEventListener('scriptsLoaded', function () {
-      const session = getSession();
-      if (!session?.userId) {
-        window.location.href = 'login.html?returnTo=dashboard-estabelecimento.html';
+      var session = getSession();
+      if (!session || !session.userId) {
+        window.location.href = './login.html?returnTo=dashboard-estabelecimento.html';
         return;
       }
       document.getElementById('session-info').textContent =

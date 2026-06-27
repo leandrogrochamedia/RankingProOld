@@ -10,8 +10,21 @@ if [ ! -f config.js ]; then
   exit 1
 fi
 
-SUPABASE_URL=$(python3 -c "import re; c=open('config.js').read(); m=re.search(r\"SUPABASE_URL:\\s*'([^']+)'\", c); print(m.group(1) if m else '')")
-SUPABASE_KEY=$(python3 -c "import re; c=open('config.js').read(); m=re.search(r\"SUPABASE_ANON_KEY:\\s*'([^']+)'\", c); print(m.group(1) if m else '')")
+SUPABASE_URL=$(python3 -c "
+import re
+c=open('config.js').read()
+m=re.search(r\"SUPABASE_URL\\s*=\\s*['\\\"]([^'\\\"]+)['\\\"]\", c)
+print(m.group(1) if m else '')
+")
+SUPABASE_KEY=$(python3 -c "
+import re
+c=open('config.js').read()
+for pat in [r\"SUPABASE_KEY\\s*=\\s*['\\\"]([^'\\\"]+)['\\\"]\", r\"SUPABASE_ANON_KEY\\s*=\\s*['\\\"]([^'\\\"]+)['\\\"]\"]:
+    m=re.search(pat, c)
+    if m:
+        print(m.group(1))
+        break
+")
 HDR1="apikey: $SUPABASE_KEY"
 HDR2="Authorization: Bearer $SUPABASE_KEY"
 
