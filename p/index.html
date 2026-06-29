@@ -34,6 +34,10 @@
         <p class="nucleus-prof-specialty" id="prof-specialty"></p>
         <p class="nucleus-rating-big" id="rating-big">0.0</p>
         <p class="nucleus-rating-meta" id="rating-meta">0 avaliações</p>
+        <p class="nucleus-prof-bio" id="prof-bio" hidden></p>
+        <p class="nucleus-prof-location" id="prof-location" hidden></p>
+        <div class="nucleus-social-links" id="social-links" hidden></div>
+        <p class="nucleus-qr-note">Para avaliar, escaneie o QR Code no local do atendimento.</p>
       </div>
 
       <div class="glass-discovery-shell nucleus-glass nucleus-glass--compact">
@@ -59,6 +63,9 @@
       const ratingMeta = document.getElementById('rating-meta');
       const reviewsList = document.getElementById('reviews-list');
       const reviewsEmpty = document.getElementById('reviews-empty');
+      const profBio = document.getElementById('prof-bio');
+      const profLocation = document.getElementById('prof-location');
+      const socialLinks = document.getElementById('social-links');
 
       const profId = new URLSearchParams(window.location.search).get('id');
 
@@ -120,6 +127,42 @@
         ratingBig.textContent = avg.toFixed(1);
         ratingMeta.textContent = RankingProProfile.formatRatingDisplay(avg, prof.total_reviews);
         document.title = prof.name + ' — Ranking Pro';
+
+        const bio = prof.profile?.bio || prof.bio || '';
+        if (bio && profBio) {
+          profBio.textContent = bio;
+          profBio.hidden = false;
+        } else if (profBio) {
+          profBio.hidden = true;
+        }
+
+        const locParts = [];
+        if (prof.current_establishment?.name) locParts.push(prof.current_establishment.name);
+        if (prof.current_establishment?.city) locParts.push(prof.current_establishment.city);
+        if (locParts.length && profLocation) {
+          profLocation.textContent = locParts.join(' · ');
+          profLocation.hidden = false;
+        } else if (profLocation) {
+          profLocation.hidden = true;
+        }
+
+        if (socialLinks) {
+          const links = [];
+          const wa = RankingProProfile.whatsappUrl(prof.phone);
+          const ig = RankingProProfile.instagramUrl(prof.profile?.instagram);
+          if (wa) {
+            links.push('<a href="' + escapeAttr(wa) + '" class="nucleus-social-btn nucleus-social-btn--wa" target="_blank" rel="noopener">WhatsApp</a>');
+          }
+          if (ig) {
+            links.push('<a href="' + escapeAttr(ig) + '" class="nucleus-social-btn nucleus-social-btn--ig" target="_blank" rel="noopener">Instagram</a>');
+          }
+          if (links.length) {
+            socialLinks.innerHTML = links.join('');
+            socialLinks.hidden = false;
+          } else {
+            socialLinks.hidden = true;
+          }
+        }
 
         if (!verifiedReviews.length) {
           reviewsEmpty.classList.remove('nucleus-hidden');

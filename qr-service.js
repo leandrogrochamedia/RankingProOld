@@ -94,7 +94,7 @@
 
   async function createSessionDirect(professionalId, expiresHours = 2) {
     const token = newToken();
-    const url = buildQrUrl(token);
+    const url = buildProfileBuscaUrl('professional', professionalId, { token });
     const expiresAt = new Date(Date.now() + expiresHours * 60 * 60 * 1000).toISOString();
     const row = await API().insert('qr_codes', {
       professional_id: professionalId,
@@ -146,6 +146,26 @@
       : './';
   }
 
+  function buildProfileBuscaUrl(entity, id, options) {
+    const opts = options || {};
+    const rel = global.RankingProPaths
+      ? global.RankingProPaths.siteUrl('cliente.html')
+      : './cliente.html';
+    const baseHref = (global.location.protocol === 'file:' && global.APP_PUBLIC_BASE_URL)
+      ? String(global.APP_PUBLIC_BASE_URL).replace(/\/$/, '') + '/cliente.html'
+      : global.location.href;
+    const dest = new URL(rel, baseHref);
+    if (entity === 'professional') {
+      dest.searchParams.set('professionalId', id);
+    } else if (entity === 'establishment') {
+      dest.searchParams.set('establishmentId', id);
+    }
+    if (opts.token) {
+      dest.searchParams.set('token', opts.token);
+    }
+    return dest.href;
+  }
+
   function buildQrUrl(token) {
     const base = (global.RankingProPaths
       ? global.RankingProPaths.siteUrl('qr/')
@@ -176,6 +196,7 @@
     createSession,
     getTokenFromUrl,
     getProfessionalIdFromUrl,
+    buildProfileBuscaUrl,
     buildQrUrl,
     buildAvaliarUrl,
     buildProfileUrl,

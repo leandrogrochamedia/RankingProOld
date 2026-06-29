@@ -44,7 +44,14 @@
       if (!token) { showError('QR inválido', 'Este link não contém um código válido.'); return; }
       try {
         const result = await RankingProQR.validateToken(token);
-        if (result.status === 'valid') { window.location.replace(RankingProQR.buildAvaliarUrl(token)); return; }
+        if (result.status === 'valid') {
+          const profId = result.professional_id;
+          const dest = profId
+            ? RankingProQR.buildProfileBuscaUrl('professional', profId, { token })
+            : RankingProQR.buildAvaliarUrl(token);
+          window.location.replace(dest);
+          return;
+        }
         if (result.status === 'expired') { showError('QR expirado', 'Este QR expirou. Peça um novo ao profissional.'); return; }
         if (result.status === 'used') { showError('Avaliação já registrada', 'Esta avaliação já foi registrada.'); return; }
         showError('QR inválido', 'Este link não é válido ou já expirou.');
